@@ -1,27 +1,26 @@
 import os
-import threading
-
-from web_base import WebBase
 from selenium.webdriver.common.by import By
 from time import sleep
-
-
+from web_base import WebBase
 
 def download(link: str, download: str, stop_callback=None):
     wb = WebBase(download_path=download, anonimus=False, hidden=True, browser='Chrome', auto_update=True)
     wb.start_driver()
     wb.navigate(link)
     wb.full_loading()
-
-    # Espera botão "Entrar"
     wb.wait(By.XPATH, "//button[text()[contains(.,'Entrar')]]")
 
     tracks = wb.driver.find_elements(By.CSS_SELECTOR, '#tracklist [data-track-id]')
+    name = None
 
     if tracks:
         for index, track in enumerate(tracks):
             if stop_callback and stop_callback():
                 print("Download interrompido.")
+                try:
+                    wb.driver.close()
+                except:
+                    pass
                 wb.driver.quit()
                 return
 
@@ -34,6 +33,10 @@ def download(link: str, download: str, stop_callback=None):
 
             if stop_callback and stop_callback():
                 print("Download interrompido.")
+                try:
+                    wb.driver.close()
+                except:
+                    pass
                 wb.driver.quit()
                 return
 
@@ -70,4 +73,9 @@ def download(link: str, download: str, stop_callback=None):
                 if os.path.isfile(caminho_arquivo) and arquivo.lower().endswith(".m4a"):
                     os.remove(caminho_arquivo)
                     print(f"Removido: {caminho_arquivo}")
+
+    try:
+        wb.driver.close()
+    except:
+        pass
     wb.driver.quit()

@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SpotFábio Downloader</title>
+    <title>Download Songbox</title>
     <style>
         body {
             background: linear-gradient(90deg, #7bcb44 0%, #2b79c2 100%);
@@ -89,6 +89,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="logo">
         <div class="logo-icon">
@@ -112,7 +113,7 @@
     </form>
 
     <footer>
-        @DevAlexFR - Corp - &lt;AF Code&gt; {Developer} 2025
+        @DevAlexFR - &lt;AF Code&gt; {Developer} 2025
     </footer>
 
     <script>
@@ -120,7 +121,9 @@
         const stopBtn = document.getElementById('stop-btn');
         const status = document.getElementById('status');
 
-        // Ao submeter formulário
+        let statusInterval = null;
+
+        // Submete o formulário e inicia o download
         document.getElementById('formulario').addEventListener('submit', function(e) {
             e.preventDefault();
             const link = document.getElementById('link').value;
@@ -139,12 +142,26 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success){
-                    status.textContent = "Download concluído!";
+                    status.textContent = "Baixando...";
+
+                    // Começa a checar o status do download a cada 1,5s
+                    statusInterval = setInterval(() => {
+                        fetch('/api/status')
+                        .then(r => r.json())
+                        .then(s => {
+                            if(!s.running){
+                                status.textContent = "Download concluído!";
+                                startBtn.style.display = '';
+                                stopBtn.style.display = 'none';
+                                clearInterval(statusInterval);
+                            }
+                        });
+                    }, 1500);
                 } else {
                     status.textContent = "Erro: " + (data.error || "Verifique o backend.");
+                    startBtn.style.display = '';
+                    stopBtn.style.display = 'none';
                 }
-                startBtn.style.display = '';
-                stopBtn.style.display = 'none';
             })
             .catch(err => {
                 status.textContent = "Erro ao comunicar com o backend!";
@@ -153,7 +170,7 @@
             });
         });
 
-        // Botão parar
+        // Clique no botão de parar download
         stopBtn.addEventListener('click', () => {
             status.textContent = "Parando download...";
             stopBtn.disabled = true;
@@ -168,11 +185,13 @@
                 }
                 startBtn.style.display = '';
                 stopBtn.style.display = 'none';
+                clearInterval(statusInterval);
             })
             .catch(() => {
                 status.textContent = "Erro ao comunicar com o backend!";
                 startBtn.style.display = '';
                 stopBtn.style.display = 'none';
+                clearInterval(statusInterval);
             });
         });
     </script>
