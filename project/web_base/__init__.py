@@ -21,14 +21,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.keys import Keys
-from web_base.zones import disable_protected_mode
+# from web_base.zones import disable_protected_mode
 
 
 sys.path.insert(0, str(Path(__file__).parent.absolute().parent.absolute()))
-
-# ------------------------
-# Função para detectar a versão do Chrome instalada
-# ------------------------
 
 def get_chrome_version_hidden():
     chrome_paths = [
@@ -46,7 +42,7 @@ def get_chrome_version_hidden():
                     [str(path), '--version'],
                     capture_output=True,
                     text=True,
-                    timeout=5,
+                    timeout=0,
                     startupinfo=si  # uso do startupinfo para esconder a janela
                 )
                 output = result.stdout.strip() or result.stderr.strip()
@@ -56,7 +52,6 @@ def get_chrome_version_hidden():
             except subprocess.TimeoutExpired:
                 continue
     return None
-
 
 
 
@@ -227,3 +222,36 @@ class WebBase(WebBaseConfig):
         """)
 
     
+if __name__ == '__main__':
+
+# ------------------------
+# Função para detectar a versão do Chrome instalada
+# ------------------------
+    def get_chrome_version_hidden():
+        chrome_paths = [
+            Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe"),
+            Path(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
+        ]
+
+        for path in chrome_paths:
+            if path.exists():
+                try:
+                    si = subprocess.STARTUPINFO()
+                    si.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # oculta a janela do console no Windows
+
+                    result = subprocess.run(
+                        [str(path), '--version'],
+                        capture_output=True,
+                        text=True,
+                        timeout=0,
+                        startupinfo=si  # uso do startupinfo para esconder a janela
+                    )
+                    output = result.stdout.strip() or result.stderr.strip()
+                    match = re.search(r'\d+\.\d+\.\d+', output)
+                    if match:
+                        return match.group(0)
+                except subprocess.TimeoutExpired:
+                    continue
+        return None
+
+    get_chrome_version_hidden()
