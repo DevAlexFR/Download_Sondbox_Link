@@ -18,8 +18,8 @@ def index():
     return send_from_directory(app.static_folder, "index.html")
 
 
-def download_with_stop(link, download):
-    bll.download(link, download, stop_callback=lambda: stop_event.is_set())
+def download_with_stop(email, senha, link, download):
+    bll.download(email, senha, link, download, stop_callback=lambda: stop_event.is_set())
 
 
 @app.route('/api/download', methods=['POST'])
@@ -28,15 +28,18 @@ def api_download():
     data = request.get_json()
     link = data.get("link")
     download = data.get("download")
+    email = data.get("email")
+    senha = data.get("senha")
 
-    if not link or not download:
-        return jsonify({"success": False, "error": "Parâmetros inválidos"}), 400
+    if not link or not download or not email or not senha:
+        return jsonify({"success": False, "error": "Parâmetros inválidos: email, senha, link ou download ausentes"}), 400
 
     if download_thread and download_thread.is_alive():
         return jsonify({"success": False, "error": "Download já em execução"}), 409
 
     stop_event.clear()
-    download_thread = threading.Thread(target=download_with_stop, args=(link, download))
+
+    download_thread = threading.Thread(target=download_with_stop, args=(email, senha, link, download))
     download_thread.start()
     return jsonify({"success": True, "message": "Download iniciado"})
 

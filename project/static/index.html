@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Download Songbox</title>
+    <title>Download música pro Fabio</title>
     <style>
         body {
             background: linear-gradient(90deg, #7bcb44 0%, #2b79c2 100%);
@@ -14,6 +14,41 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
         }
+        .navbar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            background: rgba(16,32,42, 0.93);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 32px;
+            z-index: 100;
+            box-shadow: 0 3px 24px #2b79c230;
+        }
+        .navbar .navbar-brand {
+            color: #7bcb44;
+            font-size: 1.5em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            user-select: none;
+        }
+        .navbar .navbar-login-btn {
+            background: linear-gradient(90deg, #7bcb44 0%, #2b79c2 100%);
+            color: #fff;
+            padding: 9px 28px;
+            border: none;
+            border-radius: 24px;
+            font-size: 1.06em;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 2px 14px #7bcb4451;
+            transition: filter 0.14s;
+        }
+        .navbar .navbar-login-btn:hover {
+            filter: brightness(1.1);
+        }
         .container {
             background: rgba(255,255,255,0.98);
             border-radius: 16px;
@@ -23,16 +58,20 @@
             flex-direction: column;
             gap: 20px;
             min-width: 350px;
+            margin-top: 88px;
         }
         label { font-weight: 600; margin-bottom: 4px; color: #2b79c2; }
-        input[type=text] {
+        input[type=text], input[type=email], input[type=password] {
             padding: 9px 11px; font-size: 1em;
             border: 1.5px solid #c0d8eb;
             border-radius: 6px;
             outline: none;
             width: 100%;
+            box-sizing: border-box;
         }
-        input[type=text]:focus { border-color: #2b79c2; }
+        input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
+            border-color: #2b79c2;
+        }
         button {
             margin-top: 10px;
             padding: 11px;
@@ -87,113 +126,141 @@
             width: 100%;
             background: rgba(0, 0, 0, 0.3);
         }
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(22, 54, 92, 0.56);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        .modal-backdrop.active {
+            display: flex;
+            animation: backdropFade 0.45s cubic-bezier(.62,-0.04,.53,1.34);
+        }
+        @keyframes backdropFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal {
+            background: linear-gradient(110deg, #152842 70%, #25608b 100%);
+            color: #fff;
+            border-radius: 22px;
+            box-shadow: 0 12px 64px #00000070, 0 2px 10px #7bcb4451;
+            min-width: 350px;
+            min-height: 260px;
+            padding: 38px 32px 32px;
+            position: relative;
+            transform: scale(0.4) translateY(120px) rotate(-8deg);
+            opacity: 0;
+            animation: popModal 0.59s cubic-bezier(.29,2.2,.55,.98) forwards;
+        }
+        .modal-close {
+            position: absolute;
+            top: 17px;
+            right: 24px;
+            font-size: 2em;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 900;
+            background: transparent;
+            border: none;
+            transition: color 0.22s;
+        }
+        .modal-close:hover { color: #b55757; }
+        .modal-title {
+            text-align: center;
+            font-size: 1.45em;
+            margin-bottom: 18px;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+        }
+        .modal input[type=email], .modal input[type=password] {
+            margin-bottom: 17px;
+        }
+        .modal-btn {
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 14px;
+        }
+        .navbar .logo-icon img {
+            width: 56px;
+            height: 56px;
+        }
+        .navbar .navbar-login-btn {
+            margin-left: auto;
+        }
+        .modal-msg {
+            text-align: center; min-height: 22px; margin-top: 9px;
+            font-size: 1em; color: #b4ee99; letter-spacing: 0.4px;
+        }
+        /* Modal Animation */
+        @keyframes popModal {
+            0% {
+                transform: scale(0.4) translateY(120px) rotate(-8deg);
+                opacity: 0;
+                filter: blur(2px) brightness(0.85);
+            }
+            70% {
+                filter: blur(0) brightness(1.13);
+                transform: scale(1.14) translateY(-14px) rotate(1deg);
+                opacity: 1;
+            }
+            85% {
+                transform: scale(0.97) translateY(4px) rotate(-1.5deg);
+            }
+            100% {
+                filter: blur(0) brightness(1);
+                transform: scale(1) translateY(0) rotate(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
-
 <body>
-    <div class="logo">
-        <div class="logo-icon">
-            <img src="static/logo.png" alt="Logo" />
+    <div class="navbar">
+        <div class="logo-icon" style="width:auto; height:auto; margin-bottom:0; padding:0;">
+            <img src="static/logo.png" alt="Logo" style="width:56px; height:56px; display:block;" />
         </div>
-        <span class="logo-text">Download Songbox</span>
+        <button class="navbar-login-btn" id="nav-login-btn" style="margin-left:auto; margin-right:80px;">Login</button>
     </div>
-
+    <div class="logo" style="margin-top:88px;">
+        <span class="logo-text">Download Músicas pro Mascarenhas</span>
+    </div>
     <form id="formulario" class="container">
         <div>
-            <label for="link">Link do Songbox:</label>
-            <input type="text" id="link" name="link" placeholder="https://songbox.com/s/..." required />
+            <label for="link">Link do site:</label>
+            <input type="text" id="link" name="link" placeholder="https://playpassei.com.br/" required />
         </div>
         <div>
             <label for="download">Caminho de descarga:</label>
-            <input type="text" id="download" name="download" placeholder="C:\\Users\\desk\\Downloads" required />
+            <input type="text" id="download" name="download" placeholder="C:\\Users\\desk\\Downloads\\pasta" required />
         </div>
             <button type="submit" id="start-btn">Iniciar download</button>
             <button type="button" id="stop-btn" style="display:none;">Parar download</button>
         <div id="status"></div>
     </form>
-
+    <div class="modal-backdrop" id="login-modal-backdrop">
+        <div class="modal" id="login-modal">
+            <button class="modal-close" id="close-login-modal">&times;</button>
+            <div class="modal-title">Login</div>
+            <form id="login-form">
+                <label for="email">E-mail:</label>
+                <input type="email" id="login-email" placeholder="seu@email.com" required>
+                <label for="senha">Senha:</label>
+                <input type="password" id="login-senha" placeholder="senha" required>
+                <button type="submit" class="modal-btn">Salvar login</button>
+                <div class="modal-msg" id="modal-msg"></div>
+            </form>
+        </div>
+    </div>
     <footer>
         @DevAlexFR - &lt;AF Code&gt; {Developer} 2025
     </footer>
-
-    <script>
-        const startBtn = document.getElementById('start-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const status = document.getElementById('status');
-
-        let statusInterval = null;
-
-        // Submete o formulário e inicia o download
-        document.getElementById('formulario').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const link = document.getElementById('link').value;
-            const download = document.getElementById('download').value;
-
-            status.textContent = "Iniciando download...";
-            startBtn.style.display = 'none';
-            stopBtn.style.display = '';
-            stopBtn.disabled = false;
-
-            fetch('/api/download', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ link, download })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success){
-                    status.textContent = "Baixando...";
-
-                    // Começa a checar o status do download a cada 1,5s
-                    statusInterval = setInterval(() => {
-                        fetch('/api/status')
-                        .then(r => r.json())
-                        .then(s => {
-                            if(!s.running){
-                                status.textContent = "Download concluído!";
-                                startBtn.style.display = '';
-                                stopBtn.style.display = 'none';
-                                clearInterval(statusInterval);
-                            }
-                        });
-                    }, 1500);
-                } else {
-                    status.textContent = "Erro: " + (data.error || "Verifique o backend.");
-                    startBtn.style.display = '';
-                    stopBtn.style.display = 'none';
-                }
-            })
-            .catch(err => {
-                status.textContent = "Erro ao comunicar com o backend!";
-                startBtn.style.display = '';
-                stopBtn.style.display = 'none';
-            });
-        });
-
-        // Clique no botão de parar download
-        stopBtn.addEventListener('click', () => {
-            status.textContent = "Parando download...";
-            stopBtn.disabled = true;
-
-            fetch('/api/stop', { method: 'POST' })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success){
-                    status.textContent = "Download parado.";
-                } else {
-                    status.textContent = "Erro: " + (data.error || "Verifique o backend.");
-                }
-                startBtn.style.display = '';
-                stopBtn.style.display = 'none';
-                clearInterval(statusInterval);
-            })
-            .catch(() => {
-                status.textContent = "Erro ao comunicar com o backend!";
-                startBtn.style.display = '';
-                stopBtn.style.display = 'none';
-                clearInterval(statusInterval);
-            });
-        });
-    </script>
+<script src="static/script.js"></script>
 </body>
 </html>

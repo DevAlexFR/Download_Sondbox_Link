@@ -52,7 +52,7 @@ Antes de iniciar, você precisa ter instalado:
 
 3. **Instale as dependências**
     ```
-    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
     ```
 
 ***
@@ -60,7 +60,7 @@ Antes de iniciar, você precisa ter instalado:
 
 1. **No terminal, execute:**
     ```
-    python server.py
+    python project/server.py
     ```
 
 2. **O servidor Flask iniciará por padrão em:**

@@ -1,0 +1,9 @@
+[build]
+builder = "nixpacks"
+nixpacksPlan = "python"
+
+[env]
+PORT = "5000"
+
+[run]
+command = "python project/server.py"
